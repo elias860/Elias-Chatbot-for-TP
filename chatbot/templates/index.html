@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Chatbot</title>
+    <!-- Link to external stylesheet -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Main chat container -->
+    <div class="chat-container">
+        <h2>Simple Chatbot</h2>
+        <!-- Chat box where messages appear -->
+        <div id="chat-box" class="chat-box">
+            <div class="bot-message">Hello! How can I help you today?</div>
+        </div>
+        <!-- User input form -->
+        <form id="chat-form">
+            <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off" required />
+            <button type="submit">Send</button>
+        </form>
+    </div>
+    <script>
+        // Handle form submission and chat logic
+        document.getElementById('chat-form').addEventListener('submit', async function(e) {
+            e.preventDefault(); // Prevent page reload on submit
+            const input = document.getElementById('user-input');
+            const message = input.value;
+            if (!message) return; // Do nothing if input is empty
+            
+            // Display user message in chat box
+            const chatBox = document.getElementById('chat-box');
+            const userDiv = document.createElement('div');
+            userDiv.className = 'user-message';
+            userDiv.textContent = message;
+            chatBox.appendChild(userDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Send user message to backend via POST request
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+            const data = await response.json();
+
+            // Display bot response in chat box
+            const botDiv = document.createElement('div');
+            botDiv.className = 'bot-message';
+            botDiv.textContent = data.response;
+            chatBox.appendChild(botDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            input.value = ''; // Clear input field
+        });
+    </script>
+</body>
+</html> 
